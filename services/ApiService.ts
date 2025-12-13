@@ -33,6 +33,32 @@ class ApiService {
       };
     }
   }
+
+  async updateHabit(
+    id: string,
+    updates: Partial<Habit>
+  ): Promise<ApiResponse<Habit>> {
+    await this.delay(this.syncDelay);
+
+    try {
+      const updatedHabit: Habit = {
+        ...updates,
+        id,
+        updatedAt: new Date(),
+      } as Habit;
+
+      return {
+        data: updatedHabit,
+        success: true,
+      };
+    } catch (error) {
+      return {
+        data: {} as Habit,
+        success: false,
+        error: "خطا در به‌روزرسانی عادت",
+      };
+    }
+  }
 }
 
 const apiService = new ApiService();

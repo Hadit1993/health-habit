@@ -2,7 +2,7 @@ import { Colors } from "@/constants/theme";
 import { HabitFormProps } from "@/propTypes";
 import styles from "@/styles/HabitFormStyle";
 import { validateHabitForm } from "@/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Modal,
@@ -14,6 +14,7 @@ import {
 
 export default function HabitForm({
   visible,
+  habit,
   onSubmit,
   onCancel,
 }: HabitFormProps) {
@@ -21,6 +22,18 @@ export default function HabitForm({
   const [description, setDescription] = useState("");
   const [target, setTarget] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (habit) {
+      setTitle(habit.title);
+      setDescription(habit.description || "");
+      setTarget(habit.target?.toString() || "");
+    } else {
+      setTitle("");
+      setDescription("");
+      setTarget("");
+    }
+  }, [habit, visible]);
 
   const handleSubmit = async (): Promise<void> => {
     const targetNumber = target ? parseInt(target, 10) : undefined;
@@ -55,7 +68,9 @@ export default function HabitForm({
     >
       <View style={styles.overlay}>
         <View style={styles.container}>
-          <Text style={styles.title}>'افزودن عادت جدید'</Text>
+          <Text style={styles.title}>
+            {habit ? "ویرایش عادت" : "افزودن عادت جدید"}
+          </Text>
 
           <View style={styles.form}>
             <View style={styles.field}>
@@ -116,7 +131,7 @@ export default function HabitForm({
               disabled={loading}
             >
               <Text style={styles.submitButtonText}>
-                {loading ? "در حال ذخیره..." : "افزودن"}
+                {loading ? "در حال ذخیره..." : habit ? "ذخیره" : "افزودن"}
               </Text>
             </TouchableOpacity>
           </View>

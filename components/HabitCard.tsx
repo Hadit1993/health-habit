@@ -1,8 +1,14 @@
+import { Colors } from "@/constants/theme";
 import { HabitCardProps } from "@/propTypes";
 import styles from "@/styles/HabitCardStyle";
-import { Text, View } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Text, TouchableOpacity, View } from "react-native";
 
-export default function HabitCard({ habit }: HabitCardProps) {
+export default function HabitCard({
+  habit,
+  isGuestMode,
+  onEdit,
+}: HabitCardProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -14,6 +20,13 @@ export default function HabitCard({ habit }: HabitCardProps) {
             </View>
           )}
         </View>
+        {!isGuestMode && (
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={onEdit} style={styles.actionButton}>
+              <MaterialIcons name="edit" size={24} color={Colors.secondary} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       {habit.description && (

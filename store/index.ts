@@ -8,6 +8,7 @@ import { AppState, Habit, HabitFormData } from "./../types/index";
 interface AppStore extends AppState {
   initializeApp: () => Promise<void>;
   addHabit: (data: HabitFormData) => Promise<void>;
+  updateHabit: (id: string, data: Partial<HabitFormData>) => Promise<void>;
   toggleGuestMode: () => Promise<void>;
 }
 
@@ -54,6 +55,37 @@ export const useStore = create<AppStore>((set, get) => ({
       }
     } catch (error) {
       console.error("Error adding habit:", error);
+      throw error;
+    }
+  },
+  updateHabit: async (id: string, data: Partial<HabitFormData>) => {
+    const { isGuestMode, habits } = get();
+    if (isGuestMode) {
+      throw new Error("در حالت مهمان نمی‌توانید عادت را ویرایش کنید");
+    }
+
+    try {
+      const habit = habits.find((h) => h.id === id);
+      if (!habit) {
+        throw new Error("عادت یافت نشد");
+      }
+
+      const response = await apiService.updateHabit(id, {
+        ...habit,
+        ...data,
+      });
+
+      if (response.success) {
+        const updatedHabits = habits.map((h) =>
+          h.id === id ? { ...h, ...data, updatedAt: new Date() } : h
+        );
+        set({ habits: updatedHabits });
+        await storageService.saveHabits(updatedHabits);
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error("Error updating habit:", error);
       throw error;
     }
   },

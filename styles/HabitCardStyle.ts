@@ -63,6 +63,13 @@ const habitCardStyle = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.primary,
   },
+  actions: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  actionButton: {
+    padding: 4,
+  },
 });
 
 export default habitCardStyle;
