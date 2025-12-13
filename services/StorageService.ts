@@ -32,6 +32,27 @@ class StorageService {
       return {};
     }
   }
+
+  async saveGuestMode(isGuest: boolean): Promise<void> {
+    try {
+      await AsyncStorage.setItem(
+        StorageKeys.GUEST_MODE,
+        JSON.stringify(isGuest)
+      );
+    } catch (error) {
+      console.error("Error saving guest mode:", error);
+    }
+  }
+
+  async loadGuestMode(): Promise<boolean> {
+    try {
+      const data = await AsyncStorage.getItem(StorageKeys.GUEST_MODE);
+      return data ? JSON.parse(data) : false;
+    } catch (error) {
+      console.error("Error loading guest mode:", error);
+      return false;
+    }
+  }
 }
 
 const storageService = new StorageService();
