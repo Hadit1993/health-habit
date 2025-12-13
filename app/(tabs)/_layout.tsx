@@ -38,17 +38,17 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors.primary,
         headerShown: false,
       }}
+      initialRouteName="index"
     >
       <Tabs.Screen
-        name="habits"
+        name="index"
         options={{
-          title: "عادت‌ها",
+          title: "داشبورد",
           tabBarIcon: ({ color }) => (
-            <MaterialIcons color={color} size={28} name="view-list" />
+            <MaterialIcons color={color} size={28} name="dashboard" />
           ),
         }}
       />
-
       <Tabs.Screen
         name="tracking"
         options={{
@@ -60,11 +60,11 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="index"
+        name="habits"
         options={{
-          title: "داشبورد",
+          title: "عادت‌ها",
           tabBarIcon: ({ color }) => (
-            <MaterialIcons color={color} size={28} name="dashboard" />
+            <MaterialIcons color={color} size={28} name="view-list" />
           ),
         }}
       />
