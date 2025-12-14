@@ -7,13 +7,14 @@ import {
   formatShareMessage,
   getDateRange,
 } from "@/utils";
-import { useState } from "react";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useRouter } from "expo-router";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DashboardPage() {
   const { habits, entries, streaks } = useStore();
-  const [showWeekly, setShowWeekly] = useState(true);
+  const router = useRouter();
   const today = formatDateString(new Date());
   const todayProgress = calculateDailyProgress(
     today,
@@ -51,13 +52,24 @@ export default function DashboardPage() {
     ],
   };
 
+  const navigateToSettings = () => {
+    router.navigate("/settings");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
           <Text style={styles.title}>داشبورد</Text>
-          <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-            <Text style={styles.shareButtonText}>📤 اشتراک</Text>
+          <View style={{ flex: 1 }}></View>
+          <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
+            <MaterialIcons name="share" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={navigateToSettings}
+          >
+            <MaterialIcons name="settings" size={24} color="black" />
           </TouchableOpacity>
         </View>
 

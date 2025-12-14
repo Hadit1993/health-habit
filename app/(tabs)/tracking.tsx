@@ -9,7 +9,7 @@ import { Alert, FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TrackingPage() {
-  const { habits, entries, logEntry } = useStore();
+  const { habits, isGuestMode, entries, logEntry } = useStore();
   const today = formatDateString(new Date());
   const [loading, setLoading] = useState(false);
 
@@ -39,12 +39,19 @@ export default function TrackingPage() {
         </Text>
       </View>
 
+      {isGuestMode && (
+        <View style={styles.guestBanner}>
+          <Text style={styles.guestText}>🔒 حالت مهمان - فقط مشاهده</Text>
+        </View>
+      )}
+
       <FlatList
         data={habits}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <DailyTracker
             habit={item}
+            isGuestMode={isGuestMode}
             entry={todayEntries.find((e) => e.habitId === item.id)}
             onLog={(status, value) => handleLog(item.id, status, value)}
           />

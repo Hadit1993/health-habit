@@ -32,6 +32,7 @@ export interface DeleteConfirmationProps {
 export interface DailyTrackerProps {
   habit: Habit;
   entry?: DailyEntry;
+  isGuestMode: boolean;
   onLog: (status: HabitStatus, value?: number) => Promise<void>;
 }
 

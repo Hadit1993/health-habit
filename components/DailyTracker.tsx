@@ -9,12 +9,17 @@ import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 export default function DailyTracker({
   habit,
   entry,
+  isGuestMode,
   onLog,
 }: DailyTrackerProps) {
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState(entry?.value?.toString() || "");
 
   const handleStatusChange = async (status: HabitStatus): Promise<void> => {
+    if (isGuestMode) {
+      Alert.alert("در حالت مهمان نمیتوانید چیزی ثبت کنید");
+      return;
+    }
     setLoading(true);
     try {
       await onLog(status, undefined);
@@ -24,6 +29,10 @@ export default function DailyTracker({
   };
 
   const handlePartialSubmit = async (): Promise<void> => {
+    if (isGuestMode) {
+      Alert.alert("در حالت مهمان نمیتوانید چیزی ثبت کنید");
+      return;
+    }
     const numValue = parseInt(value, 10);
     const error = validateDailyEntryValue(numValue, habit.target ?? 0);
 
@@ -90,7 +99,7 @@ export default function DailyTracker({
               keyboardType="numeric"
               placeholder="0"
               placeholderTextColor={Colors.textSecondary}
-              editable={!loading}
+              editable={!loading && !isGuestMode}
             />
             <Text style={styles.partialUnit}>از {habit.target}</Text>
             <TouchableOpacity

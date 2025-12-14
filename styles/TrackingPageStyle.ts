@@ -41,6 +41,19 @@ const trackingPageStyle = StyleSheet.create({
     color: Colors.textSecondary,
     textAlign: "center",
   },
+  guestBanner: {
+    backgroundColor: Colors.warning,
+    padding: 12,
+    marginHorizontal: 20,
+    marginBottom: 12,
+    borderRadius: 12,
+  },
+  guestText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: Colors.background,
+    textAlign: "center",
+  },
 });
 
 export default trackingPageStyle;

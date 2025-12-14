@@ -52,12 +52,19 @@ export interface AppState {
   entries: DailyEntry[];
   streaks: Record<string, Streak>;
   isGuestMode: boolean;
+  lastSyncedAt?: Date;
 }
 
 export interface HabitFormData {
   title: string;
   description?: string;
   target?: number;
+}
+
+export interface SyncPayload {
+  habits: Habit[];
+  entries: DailyEntry[];
+  timestamp: Date;
 }
 
 export interface ApiResponse<T> {

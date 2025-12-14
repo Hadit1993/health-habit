@@ -8,7 +8,7 @@ const dashboardPageStyle = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: 10,
     alignItems: "center",
     padding: 20,
     paddingTop: 10,
@@ -18,16 +18,8 @@ const dashboardPageStyle = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.text,
   },
-  shareButton: {
-    backgroundColor: Colors.accent,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
-  },
-  shareButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
+  iconButton: {
+    padding: 4,
   },
   card: {
     backgroundColor: Colors.surface,

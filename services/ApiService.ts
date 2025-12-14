@@ -1,4 +1,4 @@
-import { ApiResponse, DailyEntry, Habit } from "@/types";
+import { ApiResponse, DailyEntry, Habit, SyncPayload } from "@/types";
 import { generateId } from "@/utils";
 
 class ApiService {
@@ -125,6 +125,26 @@ class ApiService {
         data: {} as DailyEntry,
         success: false,
         error: "خطا در به‌روزرسانی ورودی",
+      };
+    }
+  }
+
+  async syncData(payload: SyncPayload): Promise<ApiResponse<SyncPayload>> {
+    await this.delay(this.syncDelay);
+
+    try {
+      return {
+        data: {
+          ...payload,
+          timestamp: new Date(),
+        },
+        success: true,
+      };
+    } catch (error) {
+      return {
+        data: payload,
+        success: false,
+        error: "خطا در همگام‌سازی داده‌ها",
       };
     }
   }

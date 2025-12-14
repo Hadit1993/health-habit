@@ -34,6 +34,8 @@ interface AppStore extends AppState {
   ) => Promise<void>;
   recalculateStreaks: () => void;
   toggleGuestMode: () => Promise<void>;
+  syncWithServer: () => Promise<void>;
+  resetApp: () => Promise<void>;
 }
 
 export const useStore = create<AppStore>((set, get) => ({
@@ -238,5 +240,43 @@ export const useStore = create<AppStore>((set, get) => ({
     const newGuestMode = !isGuestMode;
     set({ isGuestMode: newGuestMode });
     await storageService.saveGuestMode(newGuestMode);
+  },
+  syncWithServer: async () => {
+    const { habits, entries } = get();
+
+    try {
+      const response = await apiService.syncData({
+        habits,
+        entries,
+        timestamp: new Date(),
+      });
+
+      if (response.success) {
+        set({ lastSyncedAt: response.data.timestamp });
+        await storageService.saveLastSync(response.data.timestamp);
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error("Error syncing with server:", error);
+      throw error;
+    }
+  },
+
+  resetApp: async () => {
+    try {
+      await storageService.clearAll();
+      set({
+        habits: [],
+        entries: [],
+        streaks: {},
+        isGuestMode: false,
+        lastSyncedAt: undefined,
+      });
+      await get().initializeApp();
+    } catch (error) {
+      console.error("Error resetting app:", error);
+      throw error;
+    }
   },
 }));

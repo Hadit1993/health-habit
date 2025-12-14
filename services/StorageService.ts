@@ -63,16 +63,51 @@ class StorageService {
     }
   }
 
+  async loadLastSync(): Promise<Date | null> {
+    try {
+      const data = await AsyncStorage.getItem(StorageKeys.LAST_SYNC);
+      return data ? new Date(data) : null;
+    } catch (error) {
+      console.error("Error loading last sync:", error);
+      return null;
+    }
+  }
+
+  async saveLastSync(date: Date): Promise<void> {
+    try {
+      await AsyncStorage.setItem(StorageKeys.LAST_SYNC, date.toISOString());
+    } catch (error) {
+      console.error("Error saving last sync:", error);
+    }
+  }
+
+  async clearAll(): Promise<void> {
+    try {
+      await AsyncStorage.multiRemove(Object.values(StorageKeys));
+    } catch (error) {
+      console.error("Error clearing storage:", error);
+      throw new Error("خطا در پاک‌سازی داده‌ها");
+    }
+  }
+
   async loadAppState(): Promise<Partial<AppState>> {
     try {
-      const [habits, entries, streaks, isGuestMode] = await Promise.all([
-        this.loadHabits(),
-        this.loadEntries(),
-        this.loadStreaks(),
-        this.loadGuestMode(),
-      ]);
+      const [habits, entries, streaks, isGuestMode, lastSyncedAt] =
+        await Promise.all([
+          this.loadHabits(),
+          this.loadEntries(),
+          this.loadStreaks(),
+          this.loadGuestMode(),
+          this.loadLastSync(),
+        ]);
 
-      return { habits, entries, isGuestMode, streaks };
+      return {
+        habits,
+        entries,
+        isGuestMode,
+        streaks,
+        lastSyncedAt: lastSyncedAt ?? undefined,
+      };
     } catch (error) {
       console.error("Error loading app state:", error);
       return {};
