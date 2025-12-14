@@ -20,7 +20,7 @@ export default function DeleteConfirmationModal({
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="fade"
       transparent
       onRequestClose={onCancel}
     >

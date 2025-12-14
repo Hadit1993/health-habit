@@ -1,3 +1,4 @@
+import { Habit } from "@/types";
 import { format, startOfDay } from "date-fns";
 
 export const generateId = (): string => {
@@ -22,4 +23,12 @@ export const validateHabitForm = (
     return "هدف باید عددی مثبت باشد";
   }
   return null;
+};
+
+export const sortHabits = (habits: Habit[]) => {
+  return habits.sort(
+    (a, b) =>
+      new Date(a.updatedAt).getMilliseconds() -
+      new Date(b.updatedAt).getMilliseconds()
+  );
 };

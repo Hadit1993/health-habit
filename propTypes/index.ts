@@ -1,4 +1,4 @@
-import { Habit, HabitFormData } from "@/types";
+import { DailyEntry, Habit, HabitFormData, HabitStatus } from "@/types";
 
 export interface HabitCardProps {
   habit: Habit;
@@ -19,4 +19,10 @@ export interface DeleteConfirmationProps {
   habitTitle?: String;
   onDelete: () => Promise<void>;
   onCancel: () => void;
+}
+
+export interface DailyTrackerProps {
+  habit: Habit;
+  entry?: DailyEntry;
+  onLog: (status: HabitStatus, value?: number) => Promise<void>;
 }

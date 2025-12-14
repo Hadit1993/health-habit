@@ -1,12 +1,15 @@
 import StorageKeys from "@/constants/StorageKeys";
 import { AppState, DailyEntry, Habit } from "@/types";
+import { sortHabits } from "@/utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 class StorageService {
   async loadHabits(): Promise<Habit[]> {
     try {
       const data = await AsyncStorage.getItem(StorageKeys.HABITS);
-      return data ? JSON.parse(data) : [];
+      const parsedData: Habit[] = data ? JSON.parse(data) : [];
+
+      return sortHabits(parsedData);
     } catch (error) {
       console.error("Error loading habits:", error);
       return [];

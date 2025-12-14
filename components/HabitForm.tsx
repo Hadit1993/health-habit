@@ -62,7 +62,7 @@ export default function HabitForm({
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="fade"
       transparent
       onRequestClose={onCancel}
     >

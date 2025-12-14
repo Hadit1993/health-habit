@@ -69,7 +69,7 @@ const habitFormStyle = StyleSheet.create({
     color: "white",
   },
   submitButton: {
-    backgroundColor: "green",
+    backgroundColor: Colors.success,
   },
   submitButtonText: {
     fontSize: 16,

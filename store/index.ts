@@ -1,7 +1,7 @@
 import DefaultHabits from "@/constants/DefaultHabits";
 import apiService from "@/services/ApiService";
 import storageService from "@/services/StorageService";
-import { formatDateString, generateId } from "@/utils";
+import { formatDateString, generateId, sortHabits } from "@/utils";
 import { create } from "zustand";
 import { AppState, Habit, HabitFormData, HabitStatus } from "./../types/index";
 
@@ -96,7 +96,7 @@ export const useStore = create<AppStore>((set, get) => ({
         const updatedHabits = habits.map((h) =>
           h.id === id ? { ...h, ...data, updatedAt: new Date() } : h
         );
-        set({ habits: updatedHabits });
+        set({ habits: sortHabits(updatedHabits) });
         await storageService.saveHabits(updatedHabits);
       } else {
         throw new Error(response.error);
