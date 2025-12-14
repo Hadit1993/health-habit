@@ -31,6 +31,22 @@ export interface Streak {
   lastCompletedDate?: string;
 }
 
+export interface DailyProgress {
+  date: string;
+  completedHabits: number;
+  totalHabits: number;
+  percentage: number;
+  streaks: Record<string, number>;
+}
+
+export interface ChartData {
+  labels: string[];
+  datasets: Array<{
+    data: number[];
+    color?: (opacity: number) => string;
+  }>;
+}
+
 export interface AppState {
   habits: Habit[];
   entries: DailyEntry[];

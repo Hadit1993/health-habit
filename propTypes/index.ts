@@ -1,4 +1,11 @@
-import { DailyEntry, Habit, HabitFormData, HabitStatus, Streak } from "@/types";
+import {
+  ChartData,
+  DailyEntry,
+  Habit,
+  HabitFormData,
+  HabitStatus,
+  Streak,
+} from "@/types";
 
 export interface HabitCardProps {
   habit: Habit;
@@ -26,4 +33,10 @@ export interface DailyTrackerProps {
   habit: Habit;
   entry?: DailyEntry;
   onLog: (status: HabitStatus, value?: number) => Promise<void>;
+}
+
+export interface ProgressChartProps {
+  data: ChartData;
+  title: string;
+  type?: "line" | "pie";
 }

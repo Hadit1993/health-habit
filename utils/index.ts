@@ -1,4 +1,4 @@
-import { DailyEntry, Habit, HabitStatus, Streak } from "@/types";
+import { DailyEntry, DailyProgress, Habit, HabitStatus, Streak } from "@/types";
 import { format, parseISO, startOfDay, subDays } from "date-fns";
 
 export const generateId = (): string => {
@@ -101,4 +101,45 @@ export const validateDailyEntryValue = (
   }
 
   return null;
+};
+
+export const calculateDailyProgress = (
+  date: string,
+  habitIds: string[],
+  entries: DailyEntry[]
+): DailyProgress => {
+  const dayEntries = entries.filter((e) => e.date === date);
+  const completedHabits = dayEntries.filter(
+    (e) => e.status === HabitStatus.COMPLETED
+  ).length;
+
+  const totalHabits = habitIds.length;
+  const percentage =
+    totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
+
+  const streaks: Record<string, number> = {};
+  habitIds.forEach((id) => {
+    const streak = calculateStreak(id, entries);
+    streaks[id] = streak.currentStreak;
+  });
+
+  return {
+    date,
+    completedHabits,
+    totalHabits,
+    percentage,
+    streaks,
+  };
+};
+
+export const formatShareMessage = (progress: DailyProgress): string => {
+  return `امروز ${progress.completedHabits} از ${progress.totalHabits} عادت تکمیل شد (${progress.percentage}%) 🎉`;
+};
+
+export const getDateRange = (days: number): string[] => {
+  const dates: string[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    dates.push(formatDateString(subDays(new Date(), i)));
+  }
+  return dates;
 };
