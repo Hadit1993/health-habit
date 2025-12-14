@@ -24,9 +24,12 @@ class StorageService {
 
   async loadAppState(): Promise<Partial<AppState>> {
     try {
-      const habits = await this.loadHabits();
+      const [habits, isGuestMode] = await Promise.all([
+        this.loadHabits(),
+        this.loadGuestMode(),
+      ]);
 
-      return { habits };
+      return { habits, isGuestMode };
     } catch (error) {
       console.error("Error loading app state:", error);
       return {};

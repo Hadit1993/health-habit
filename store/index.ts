@@ -9,6 +9,7 @@ interface AppStore extends AppState {
   initializeApp: () => Promise<void>;
   addHabit: (data: HabitFormData) => Promise<void>;
   updateHabit: (id: string, data: Partial<HabitFormData>) => Promise<void>;
+  deleteHabit: (id: string) => Promise<void>;
   toggleGuestMode: () => Promise<void>;
 }
 
@@ -19,7 +20,7 @@ export const useStore = create<AppStore>((set, get) => ({
     try {
       const state = await storageService.loadAppState();
       if (state.habits && state.habits.length > 0) {
-        set({ habits: state.habits });
+        set({ habits: state.habits, isGuestMode: state.isGuestMode || false });
       } else {
         const currentDate = new Date();
         const defaultHabits: Habit[] = DefaultHabits.map((habit) => ({
@@ -86,6 +87,30 @@ export const useStore = create<AppStore>((set, get) => ({
       }
     } catch (error) {
       console.error("Error updating habit:", error);
+      throw error;
+    }
+  },
+  deleteHabit: async (id: string) => {
+    const { isGuestMode, habits } = get();
+    if (isGuestMode) {
+      throw new Error("در حالت مهمان نمی‌توانید عادت را حذف کنید");
+    }
+
+    try {
+      const response = await apiService.deleteHabit(id);
+
+      if (response.success) {
+        const updatedHabits = habits.filter((h) => h.id !== id);
+
+        set({
+          habits: updatedHabits,
+        });
+        await storageService.saveHabits(updatedHabits);
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error("Error deleting habit:", error);
       throw error;
     }
   },

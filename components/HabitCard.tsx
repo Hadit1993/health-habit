@@ -8,6 +8,7 @@ export default function HabitCard({
   habit,
   isGuestMode,
   onEdit,
+  onDelete,
 }: HabitCardProps) {
   return (
     <View style={styles.container}>
@@ -24,6 +25,9 @@ export default function HabitCard({
           <View style={styles.actions}>
             <TouchableOpacity onPress={onEdit} style={styles.actionButton}>
               <MaterialIcons name="edit" size={24} color={Colors.secondary} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onDelete} style={styles.actionButton}>
+              <MaterialIcons name="delete" size={24} color="red" />
             </TouchableOpacity>
           </View>
         )}

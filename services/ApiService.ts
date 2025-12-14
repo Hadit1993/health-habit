@@ -59,6 +59,23 @@ class ApiService {
       };
     }
   }
+
+  async deleteHabit(id: string): Promise<ApiResponse<{ id: string }>> {
+    await this.delay(this.syncDelay);
+
+    try {
+      return {
+        data: { id },
+        success: true,
+      };
+    } catch (error) {
+      return {
+        data: { id: "" },
+        success: false,
+        error: "خطا در حذف عادت",
+      };
+    }
+  }
 }
 
 const apiService = new ApiService();

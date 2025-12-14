@@ -1,3 +1,4 @@
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import HabitCard from "@/components/HabitCard";
 import HabitForm from "@/components/HabitForm";
 import { useStore } from "@/store";
@@ -8,8 +9,11 @@ import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HabitsPage() {
-  const { habits, isGuestMode, addHabit, updateHabit } = useStore();
+  const { habits, isGuestMode, addHabit, updateHabit, deleteHabit } =
+    useStore();
   const [formVisible, setFormVisible] = useState(false);
+  const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
+    useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | undefined>();
 
   const handleAddHabit = (): void => {
@@ -28,6 +32,23 @@ export default function HabitsPage() {
     }
     setEditingHabit(habit);
     setFormVisible(true);
+  };
+
+  const handleDeleteHabit = (habit: Habit): void => {
+    if (isGuestMode) {
+      Alert.alert("حالت مهمان", "در حالت مهمان نمی‌توانید عادت را حذف کنید");
+      return;
+    }
+    setEditingHabit(habit);
+    setDeleteConfirmationVisible(true);
+  };
+
+  const onDeleteConfirm = async () => {
+    try {
+      if (editingHabit?.id) await deleteHabit(editingHabit?.id);
+    } catch (error) {
+      Alert.alert("خطا", "خطایی در حذف عادت رخ داد");
+    }
   };
 
   const handleSubmitForm = async (data: HabitFormData): Promise<void> => {
@@ -60,6 +81,7 @@ export default function HabitsPage() {
             habit={item}
             isGuestMode={isGuestMode}
             onEdit={() => handleEditHabit(item)}
+            onDelete={() => handleDeleteHabit(item)}
           />
         )}
         contentContainerStyle={styles.list}
@@ -69,6 +91,12 @@ export default function HabitsPage() {
         habit={editingHabit}
         onSubmit={handleSubmitForm}
         onCancel={() => setFormVisible(false)}
+      />
+      <DeleteConfirmationModal
+        visible={deleteConfirmationVisible}
+        habitTitle={editingHabit?.title}
+        onCancel={() => setDeleteConfirmationVisible(false)}
+        onDelete={onDeleteConfirm}
       />
     </SafeAreaView>
   );
