@@ -1,4 +1,4 @@
-import { ApiResponse, Habit } from "@/types";
+import { ApiResponse, DailyEntry, Habit } from "@/types";
 import { generateId } from "@/utils";
 
 class ApiService {
@@ -73,6 +73,58 @@ class ApiService {
         data: { id: "" },
         success: false,
         error: "خطا در حذف عادت",
+      };
+    }
+  }
+
+  async createEntry(
+    entry: Omit<DailyEntry, "id" | "createdAt" | "updatedAt">
+  ): Promise<ApiResponse<DailyEntry>> {
+    await this.delay(this.syncDelay);
+
+    try {
+      const newEntry: DailyEntry = {
+        ...entry,
+        id: generateId(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      return {
+        data: newEntry,
+        success: true,
+      };
+    } catch (error) {
+      return {
+        data: {} as DailyEntry,
+        success: false,
+        error: "خطا در ثبت ورودی",
+      };
+    }
+  }
+
+  async updateEntry(
+    id: string,
+    updates: Partial<DailyEntry>
+  ): Promise<ApiResponse<DailyEntry>> {
+    await this.delay(this.syncDelay);
+
+    try {
+      const updatedEntry: DailyEntry = {
+        ...updates,
+        id,
+        updatedAt: new Date(),
+      } as DailyEntry;
+
+      return {
+        data: updatedEntry,
+        success: true,
+      };
+    } catch (error) {
+      return {
+        data: {} as DailyEntry,
+        success: false,
+        error: "خطا در به‌روزرسانی ورودی",
       };
     }
   }

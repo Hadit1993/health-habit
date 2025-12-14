@@ -8,8 +8,25 @@ export interface Habit {
   updatedAt: Date;
 }
 
+export interface DailyEntry {
+  id: string;
+  habitId: string;
+  date: string;
+  status: HabitStatus;
+  value?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum HabitStatus {
+  COMPLETED = "completed",
+  NOT_COMPLETED = "not_completed",
+  PARTIAL = "partial",
+}
+
 export interface AppState {
   habits: Habit[];
+  entries: DailyEntry[];
   isGuestMode: boolean;
 }
 

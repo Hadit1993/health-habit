@@ -84,6 +84,14 @@ export default function HabitsPage() {
             onDelete={() => handleDeleteHabit(item)}
           />
         )}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <Text style={styles.emptyText}>هنوز عادتی اضافه نکرده‌اید</Text>
+            <Text style={styles.emptySubtext}>
+              با دکمه افزودن، عادت اول خود را ثبت کنید
+            </Text>
+          </View>
+        }
         contentContainerStyle={styles.list}
       />
       <HabitForm

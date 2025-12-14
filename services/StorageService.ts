@@ -1,5 +1,5 @@
 import StorageKeys from "@/constants/StorageKeys";
-import { AppState, Habit } from "@/types";
+import { AppState, DailyEntry, Habit } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 class StorageService {
@@ -22,14 +22,34 @@ class StorageService {
     }
   }
 
+  async loadEntries(): Promise<DailyEntry[]> {
+    try {
+      const data = await AsyncStorage.getItem(StorageKeys.ENTRIES);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error("Error loading entries:", error);
+      return [];
+    }
+  }
+
+  async saveEntries(entries: DailyEntry[]): Promise<void> {
+    try {
+      await AsyncStorage.setItem(StorageKeys.ENTRIES, JSON.stringify(entries));
+    } catch (error) {
+      console.error("Error saving entries:", error);
+      throw new Error("خطا در ذخیره‌سازی ورودی‌ها");
+    }
+  }
+
   async loadAppState(): Promise<Partial<AppState>> {
     try {
-      const [habits, isGuestMode] = await Promise.all([
+      const [habits, entries, isGuestMode] = await Promise.all([
         this.loadHabits(),
+        this.loadEntries(),
         this.loadGuestMode(),
       ]);
 
-      return { habits, isGuestMode };
+      return { habits, entries, isGuestMode };
     } catch (error) {
       console.error("Error loading app state:", error);
       return {};

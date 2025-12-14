@@ -47,6 +47,23 @@ const habitPageStyle = StyleSheet.create({
     color: Colors.background,
     textAlign: "center",
   },
+  empty: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 60,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: Colors.textSecondary,
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: "center",
+  },
 });
 
 export default habitPageStyle;

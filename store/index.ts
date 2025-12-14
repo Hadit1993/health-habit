@@ -1,26 +1,42 @@
 import DefaultHabits from "@/constants/DefaultHabits";
 import apiService from "@/services/ApiService";
 import storageService from "@/services/StorageService";
-import { generateId } from "@/utils";
+import { formatDateString, generateId } from "@/utils";
 import { create } from "zustand";
-import { AppState, Habit, HabitFormData } from "./../types/index";
+import { AppState, Habit, HabitFormData, HabitStatus } from "./../types/index";
 
 interface AppStore extends AppState {
   initializeApp: () => Promise<void>;
   addHabit: (data: HabitFormData) => Promise<void>;
   updateHabit: (id: string, data: Partial<HabitFormData>) => Promise<void>;
   deleteHabit: (id: string) => Promise<void>;
+  logEntry: (
+    habitId: string,
+    status: HabitStatus,
+    value?: number
+  ) => Promise<void>;
+  updateEntry: (
+    habitId: string,
+    date: string,
+    status: HabitStatus,
+    value?: number
+  ) => Promise<void>;
   toggleGuestMode: () => Promise<void>;
 }
 
 export const useStore = create<AppStore>((set, get) => ({
   habits: [],
+  entries: [],
   isGuestMode: false,
   initializeApp: async () => {
     try {
       const state = await storageService.loadAppState();
       if (state.habits && state.habits.length > 0) {
-        set({ habits: state.habits, isGuestMode: state.isGuestMode || false });
+        set({
+          habits: state.habits,
+          entries: state.entries || [],
+          isGuestMode: state.isGuestMode || false,
+        });
       } else {
         const currentDate = new Date();
         const defaultHabits: Habit[] = DefaultHabits.map((habit) => ({
@@ -111,6 +127,75 @@ export const useStore = create<AppStore>((set, get) => ({
       }
     } catch (error) {
       console.error("Error deleting habit:", error);
+      throw error;
+    }
+  },
+  logEntry: async (habitId: string, status: HabitStatus, value?: number) => {
+    const { entries } = get();
+    const today = formatDateString(new Date());
+
+    try {
+      // Check if entry already exists for today
+      const existingEntry = entries.find(
+        (e) => e.habitId === habitId && e.date === today
+      );
+
+      if (existingEntry) {
+        await get().updateEntry(habitId, today, status, value);
+      } else {
+        const response = await apiService.createEntry({
+          habitId,
+          date: today,
+          status,
+          value,
+        });
+
+        if (response.success) {
+          const newEntries = [...entries, response.data];
+          set({ entries: newEntries });
+          await storageService.saveEntries(newEntries);
+        } else {
+          throw new Error(response.error);
+        }
+      }
+    } catch (error) {
+      console.error("Error logging entry:", error);
+      throw error;
+    }
+  },
+  updateEntry: async (
+    habitId: string,
+    date: string,
+    status: HabitStatus,
+    value?: number
+  ) => {
+    const { entries } = get();
+
+    try {
+      const entry = entries.find(
+        (e) => e.habitId === habitId && e.date === date
+      );
+
+      if (!entry) {
+        throw new Error("ورودی یافت نشد");
+      }
+
+      const response = await apiService.updateEntry(entry.id, {
+        status,
+        value,
+      });
+
+      if (response.success) {
+        const updatedEntries = entries.map((e) =>
+          e.id === entry.id ? { ...e, status, value, updatedAt: new Date() } : e
+        );
+        set({ entries: updatedEntries });
+        await storageService.saveEntries(updatedEntries);
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error("Error updating entry:", error);
       throw error;
     }
   },

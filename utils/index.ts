@@ -1,5 +1,11 @@
+import { format, startOfDay } from "date-fns";
+
 export const generateId = (): string => {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+};
+
+export const formatDateString = (date: Date): string => {
+  return format(startOfDay(date), "yyyy-MM-dd");
 };
 
 export const validateHabitForm = (
