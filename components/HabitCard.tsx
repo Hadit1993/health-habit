@@ -7,6 +7,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 export default function HabitCard({
   habit,
   isGuestMode,
+  streak,
   onEdit,
   onDelete,
 }: HabitCardProps) {
@@ -42,6 +43,12 @@ export default function HabitCard({
           <View style={styles.target}>
             <Text style={styles.targetLabel}>هدف:</Text>
             <Text style={styles.targetValue}>{habit.target}</Text>
+          </View>
+        )}
+        {streak && streak.currentStreak > 0 && (
+          <View style={styles.streakContainer}>
+            <Text style={styles.streakLabel}>🔥</Text>
+            <Text style={styles.streakValue}>{streak.currentStreak} روز</Text>
           </View>
         )}
       </View>

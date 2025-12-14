@@ -2,8 +2,9 @@ import { Colors } from "@/constants/theme";
 import { DailyTrackerProps } from "@/propTypes";
 import styles from "@/styles/DailyTrackerStyle";
 import { HabitStatus } from "@/types";
+import { validateDailyEntryValue } from "@/utils";
 import { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function DailyTracker({
   habit,
@@ -24,7 +25,10 @@ export default function DailyTracker({
 
   const handlePartialSubmit = async (): Promise<void> => {
     const numValue = parseInt(value, 10);
-    if (isNaN(numValue) || numValue <= 0) {
+    const error = validateDailyEntryValue(numValue, habit.target ?? 0);
+
+    if (error) {
+      Alert.alert(error);
       return;
     }
 

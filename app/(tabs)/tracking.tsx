@@ -1,14 +1,17 @@
 import DailyTracker from "@/components/DailyTracker";
+import LoadingModal from "@/components/LoadingModal";
 import { useStore } from "@/store";
 import styles from "@/styles/TrackingPageStyle";
 import { HabitStatus } from "@/types";
 import { formatDateString } from "@/utils";
+import { useState } from "react";
 import { Alert, FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TrackingPage() {
   const { habits, entries, logEntry } = useStore();
   const today = formatDateString(new Date());
+  const [loading, setLoading] = useState(false);
 
   const handleLog = async (
     habitId: string,
@@ -16,9 +19,12 @@ export default function TrackingPage() {
     value?: number
   ): Promise<void> => {
     try {
+      setLoading(true);
       await logEntry(habitId, status, value);
     } catch (error) {
       Alert.alert("خطا", "خطایی در ثبت ورودی رخ داد");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,6 +59,7 @@ export default function TrackingPage() {
           </View>
         }
       />
+      <LoadingModal loading={loading} />
     </SafeAreaView>
   );
 }

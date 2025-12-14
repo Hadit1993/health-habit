@@ -1,8 +1,9 @@
-import { DailyEntry, Habit, HabitFormData, HabitStatus } from "@/types";
+import { DailyEntry, Habit, HabitFormData, HabitStatus, Streak } from "@/types";
 
 export interface HabitCardProps {
   habit: Habit;
   isGuestMode: boolean;
+  streak?: Streak;
   onEdit: () => void;
   onDelete: () => void;
 }

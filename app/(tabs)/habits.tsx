@@ -9,7 +9,7 @@ import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HabitsPage() {
-  const { habits, isGuestMode, addHabit, updateHabit, deleteHabit } =
+  const { habits, streaks, isGuestMode, addHabit, updateHabit, deleteHabit } =
     useStore();
   const [formVisible, setFormVisible] = useState(false);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
@@ -79,6 +79,7 @@ export default function HabitsPage() {
         renderItem={({ item }) => (
           <HabitCard
             habit={item}
+            streak={streaks[item.id]}
             isGuestMode={isGuestMode}
             onEdit={() => handleEditHabit(item)}
             onDelete={() => handleDeleteHabit(item)}

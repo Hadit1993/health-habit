@@ -1,9 +1,20 @@
 import DefaultHabits from "@/constants/DefaultHabits";
 import apiService from "@/services/ApiService";
 import storageService from "@/services/StorageService";
-import { formatDateString, generateId, sortHabits } from "@/utils";
+import {
+  calculateStreak,
+  formatDateString,
+  generateId,
+  sortHabits,
+} from "@/utils";
 import { create } from "zustand";
-import { AppState, Habit, HabitFormData, HabitStatus } from "./../types/index";
+import {
+  AppState,
+  Habit,
+  HabitFormData,
+  HabitStatus,
+  Streak,
+} from "./../types/index";
 
 interface AppStore extends AppState {
   initializeApp: () => Promise<void>;
@@ -21,12 +32,14 @@ interface AppStore extends AppState {
     status: HabitStatus,
     value?: number
   ) => Promise<void>;
+  recalculateStreaks: () => void;
   toggleGuestMode: () => Promise<void>;
 }
 
 export const useStore = create<AppStore>((set, get) => ({
   habits: [],
   entries: [],
+  streaks: {},
   isGuestMode: false,
   initializeApp: async () => {
     try {
@@ -36,7 +49,9 @@ export const useStore = create<AppStore>((set, get) => ({
           habits: state.habits,
           entries: state.entries || [],
           isGuestMode: state.isGuestMode || false,
+          streaks: state.streaks,
         });
+        get().recalculateStreaks();
       } else {
         const currentDate = new Date();
         const defaultHabits: Habit[] = DefaultHabits.map((habit) => ({
@@ -107,7 +122,7 @@ export const useStore = create<AppStore>((set, get) => ({
     }
   },
   deleteHabit: async (id: string) => {
-    const { isGuestMode, habits } = get();
+    const { isGuestMode, habits, entries } = get();
     if (isGuestMode) {
       throw new Error("در حالت مهمان نمی‌توانید عادت را حذف کنید");
     }
@@ -117,11 +132,18 @@ export const useStore = create<AppStore>((set, get) => ({
 
       if (response.success) {
         const updatedHabits = habits.filter((h) => h.id !== id);
+        const updatedEntries = entries.filter((e) => e.habitId !== id);
 
         set({
-          habits: updatedHabits,
+          habits: sortHabits(updatedHabits),
+          entries: updatedEntries,
         });
-        await storageService.saveHabits(updatedHabits);
+
+        await Promise.all([
+          storageService.saveHabits(updatedHabits),
+          storageService.saveEntries(updatedEntries),
+        ]);
+        get().recalculateStreaks();
       } else {
         throw new Error(response.error);
       }
@@ -135,7 +157,6 @@ export const useStore = create<AppStore>((set, get) => ({
     const today = formatDateString(new Date());
 
     try {
-      // Check if entry already exists for today
       const existingEntry = entries.find(
         (e) => e.habitId === habitId && e.date === today
       );
@@ -154,6 +175,7 @@ export const useStore = create<AppStore>((set, get) => ({
           const newEntries = [...entries, response.data];
           set({ entries: newEntries });
           await storageService.saveEntries(newEntries);
+          get().recalculateStreaks();
         } else {
           throw new Error(response.error);
         }
@@ -191,6 +213,7 @@ export const useStore = create<AppStore>((set, get) => ({
         );
         set({ entries: updatedEntries });
         await storageService.saveEntries(updatedEntries);
+        get().recalculateStreaks();
       } else {
         throw new Error(response.error);
       }
@@ -198,6 +221,17 @@ export const useStore = create<AppStore>((set, get) => ({
       console.error("Error updating entry:", error);
       throw error;
     }
+  },
+  recalculateStreaks: () => {
+    const { habits, entries } = get();
+    const newStreaks: Record<string, Streak> = {};
+
+    habits.forEach((habit) => {
+      newStreaks[habit.id] = calculateStreak(habit.id, entries);
+    });
+
+    set({ streaks: newStreaks });
+    storageService.saveStreaks(newStreaks);
   },
   toggleGuestMode: async () => {
     const { isGuestMode } = get();

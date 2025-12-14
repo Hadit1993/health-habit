@@ -1,5 +1,5 @@
 import StorageKeys from "@/constants/StorageKeys";
-import { AppState, DailyEntry, Habit } from "@/types";
+import { AppState, DailyEntry, Habit, Streak } from "@/types";
 import { sortHabits } from "@/utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -44,15 +44,35 @@ class StorageService {
     }
   }
 
+  async saveStreaks(streaks: Record<string, Streak>): Promise<void> {
+    try {
+      await AsyncStorage.setItem(StorageKeys.STREAKS, JSON.stringify(streaks));
+    } catch (error) {
+      console.error("Error saving streaks:", error);
+      throw new Error("خطا در ذخیره‌سازی استریک‌ها");
+    }
+  }
+
+  async loadStreaks(): Promise<Record<string, Streak>> {
+    try {
+      const data = await AsyncStorage.getItem(StorageKeys.STREAKS);
+      return data ? JSON.parse(data) : {};
+    } catch (error) {
+      console.error("Error loading streaks:", error);
+      return {};
+    }
+  }
+
   async loadAppState(): Promise<Partial<AppState>> {
     try {
-      const [habits, entries, isGuestMode] = await Promise.all([
+      const [habits, entries, streaks, isGuestMode] = await Promise.all([
         this.loadHabits(),
         this.loadEntries(),
+        this.loadStreaks(),
         this.loadGuestMode(),
       ]);
 
-      return { habits, entries, isGuestMode };
+      return { habits, entries, isGuestMode, streaks };
     } catch (error) {
       console.error("Error loading app state:", error);
       return {};

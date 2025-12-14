@@ -70,6 +70,23 @@ const habitCardStyle = StyleSheet.create({
   actionButton: {
     padding: 4,
   },
+  streakContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: Colors.surfaceLight,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  streakLabel: {
+    fontSize: 16,
+  },
+  streakValue: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: Colors.warning,
+  },
 });
 
 export default habitCardStyle;

@@ -24,9 +24,17 @@ export enum HabitStatus {
   PARTIAL = "partial",
 }
 
+export interface Streak {
+  habitId: string;
+  currentStreak: number;
+  longestStreak: number;
+  lastCompletedDate?: string;
+}
+
 export interface AppState {
   habits: Habit[];
   entries: DailyEntry[];
+  streaks: Record<string, Streak>;
   isGuestMode: boolean;
 }
 
